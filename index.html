@@ -675,6 +675,64 @@
 
     .btn-font.font-sm { font-size: 0.88rem; }
     .btn-font.font-lg { font-size: 1.15rem; }
+    .btn-font.font-reset { font-size: 1rem; opacity: 0.75; }
+    .btn-font.font-reset:hover { opacity: 1; }
+    .btn-font.active-font {
+      background: var(--dourado);
+      border-color: var(--dourado-claro);
+    }
+
+    /* Controles de fonte no menu mobile */
+    .font-controls-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--cinza-claro);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 4px;
+    }
+
+    .font-controls-mobile span {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--cinza-medio);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .font-controls-mobile-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-font-mob {
+      flex: 1;
+      background: #fff;
+      border: 2px solid var(--cinza-claro);
+      color: var(--verde-escuro);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      padding: 10px 6px;
+      transition: all .2s;
+      font-size: 1rem;
+    }
+
+    .btn-font-mob:hover {
+      border-color: var(--verde-medio);
+      background: #f0fbf5;
+    }
+
+    .btn-font-mob.active-font {
+      background: var(--verde-escuro);
+      border-color: var(--verde-escuro);
+      color: #fff;
+    }
+
+    .btn-font-mob-lg { font-size: 1.15rem; }
+    .btn-font-mob-reset { font-size: 0.9rem; opacity: 0.8; }
 
     /* ═══════════════════════════════
        BOTÃO TELEFONE NO HEADER
@@ -1909,10 +1967,11 @@
     <a href="tel:6130353900" class="btn-tel" aria-label="Ligar para (61) 3035-3900">
       <span class="tel-icon">📞</span> (61) 3035-3900
     </a>
-    <div class="font-controls" aria-label="Ajustar tamanho do texto">
+    <div class="font-controls" aria-label="Ajustar tamanho do texto" role="group">
       <span>Texto</span>
-      <button class="btn-font font-sm" onclick="ajustarFonte(-1)" aria-label="Diminuir texto" title="Diminuir texto">A−</button>
-      <button class="btn-font font-lg" onclick="ajustarFonte(1)" aria-label="Aumentar texto" title="Aumentar texto">A+</button>
+      <button class="btn-font font-sm" onclick="ajustarFonte(-1)" aria-label="Diminuir texto" title="Diminuir texto (A−)">A−</button>
+      <button class="btn-font font-reset" onclick="ajustarFonte(0)" aria-label="Tamanho padrão do texto" title="Tamanho padrão (A)">A</button>
+      <button class="btn-font font-lg" onclick="ajustarFonte(1)" aria-label="Aumentar texto" title="Aumentar texto (A+)">A+</button>
     </div>
   </div>
 
@@ -1925,6 +1984,14 @@
     <a href="tel:6130353900" class="btn-tel" aria-label="Ligar para (61) 3035-3900" style="margin-top:4px;">
       <span class="tel-icon">📞</span> (61) 3035-3900
     </a>
+    <div class="font-controls-mobile" aria-label="Ajustar tamanho do texto" role="group">
+      <span>Tamanho do texto:</span>
+      <div class="font-controls-mobile-btns">
+        <button class="btn-font-mob" onclick="ajustarFonte(-1)" aria-label="Diminuir texto" title="Diminuir texto">A−</button>
+        <button class="btn-font-mob btn-font-mob-reset" onclick="ajustarFonte(0)" aria-label="Tamanho padrão" title="Tamanho padrão">A</button>
+        <button class="btn-font-mob btn-font-mob-lg" onclick="ajustarFonte(1)" aria-label="Aumentar texto" title="Aumentar texto">A+</button>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -2410,10 +2477,50 @@
   }
 
   // ── Ajuste de fonte ──
+  const FONTE_PADRAO = 18;
+  const FONTE_MIN = 14;
+  const FONTE_MAX = 26;
+
   function ajustarFonte(delta) {
-    tamanhoFonte = Math.min(24, Math.max(16, tamanhoFonte + delta * 2));
+    if (delta === 0) {
+      tamanhoFonte = FONTE_PADRAO;
+    } else {
+      tamanhoFonte = Math.min(FONTE_MAX, Math.max(FONTE_MIN, tamanhoFonte + delta * 2));
+    }
+    // Altera o font-size do <html> (root) — afeta toda a página via herança e rem
+    document.documentElement.style.fontSize = tamanhoFonte + 'px';
     document.body.style.fontSize = tamanhoFonte + 'px';
+    try { localStorage.setItem('conectaplac-fonte', tamanhoFonte); } catch(e){}
+    atualizarBtnsFonte();
   }
+
+  function atualizarBtnsFonte() {
+    // Desktop
+    const btnSm = document.querySelector('.btn-font.font-sm');
+    const btnReset = document.querySelector('.btn-font.font-reset');
+    const btnLg = document.querySelector('.btn-font.font-lg');
+    if (btnSm) { btnSm.classList.toggle('active-font', tamanhoFonte < FONTE_PADRAO); btnSm.disabled = tamanhoFonte <= FONTE_MIN; }
+    if (btnReset) btnReset.classList.toggle('active-font', tamanhoFonte === FONTE_PADRAO);
+    if (btnLg) { btnLg.classList.toggle('active-font', tamanhoFonte > FONTE_PADRAO); btnLg.disabled = tamanhoFonte >= FONTE_MAX; }
+    // Mobile
+    const mSm   = document.querySelector('.btn-font-mob:not(.btn-font-mob-lg):not(.btn-font-mob-reset)');
+    const mReset = document.querySelector('.btn-font-mob-reset');
+    const mLg   = document.querySelector('.btn-font-mob-lg');
+    if (mSm) { mSm.classList.toggle('active-font', tamanhoFonte < FONTE_PADRAO); mSm.disabled = tamanhoFonte <= FONTE_MIN; }
+    if (mReset) mReset.classList.toggle('active-font', tamanhoFonte === FONTE_PADRAO);
+    if (mLg) { mLg.classList.toggle('active-font', tamanhoFonte > FONTE_PADRAO); mLg.disabled = tamanhoFonte >= FONTE_MAX; }
+  }
+
+  // Restaurar preferência salva
+  try {
+    const fonteSalva = parseInt(localStorage.getItem('conectaplac-fonte'));
+    if (fonteSalva && fonteSalva >= FONTE_MIN && fonteSalva <= FONTE_MAX) {
+      tamanhoFonte = fonteSalva;
+      document.documentElement.style.fontSize = tamanhoFonte + 'px';
+      document.body.style.fontSize = tamanhoFonte + 'px';
+    }
+  } catch(e) {}
+  atualizarBtnsFonte();
 
   // ── FAQ ──
   function toggleFaq(id) {
