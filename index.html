@@ -48,16 +48,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 90px;
-      height: auto;
+      height: 90px;
       position: sticky;
       top: 0;
       z-index: 100;
       box-shadow: 0 2px 18px rgba(0,0,0,0.18);
-      flex-wrap: wrap;
-      gap: 8px;
-      padding-top: 8px;
-      padding-bottom: 8px;
     }
 
     .logo-area {
@@ -68,7 +63,6 @@
       padding: 10px 12px;
       border-radius: 10px;
       transition: background .2s;
-      flex-shrink: 0;
     }
 
     .logo-area:hover { background: rgba(255,255,255,0.08); }
@@ -108,7 +102,6 @@
       display: flex;
       gap: 10px;
       align-items: center;
-      flex-wrap: wrap;
     }
 
     nav button {
@@ -654,8 +647,6 @@
       margin-left: 10px;
       border-left: 1px solid rgba(255,255,255,0.2);
       padding-left: 14px;
-      flex-shrink: 0;
-      flex-wrap: nowrap;
     }
 
     .font-controls span {
@@ -673,11 +664,10 @@
       cursor: pointer;
       font-family: 'DM Sans', sans-serif;
       font-weight: 700;
-      min-width: 36px;
-      min-height: 36px;
+      min-width: 42px;
+      min-height: 42px;
       transition: all .2s;
       line-height: 1;
-      flex-shrink: 0;
     }
 
     .btn-font:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.6); }
@@ -1188,9 +1178,8 @@
     @media (max-width: 700px) {
       /* Header compacto */
       header {
-        padding: 8px 1rem;
-        min-height: 64px;
-        height: auto;
+        padding: 0 1rem;
+        height: 64px;
         position: sticky;
       }
 
